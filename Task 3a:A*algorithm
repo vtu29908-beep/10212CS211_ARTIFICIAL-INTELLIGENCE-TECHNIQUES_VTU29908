@@ -1,0 +1,54 @@
+import heapq
+
+graph = {
+    'A': {'B': 1, 'C': 4},
+    'B': {'D': 2, 'E': 5},
+    'C': {'E': 1},
+    'D': {'G': 3},
+    'E': {'G': 2},
+    'G': {}
+}
+
+heuristic = {
+    'A': 7,
+    'B': 6,
+    'C': 4,
+    'D': 3,
+    'E': 2,
+    'G': 0
+}
+
+def a_star(start, goal):
+    open_list = [(heuristic[start], 0, start)]
+    parent = {start: None}
+    cost = {start: 0}
+
+    while open_list:
+        f, g, current = heapq.heappop(open_list)
+
+        if current == goal:
+            path = []
+            while current is not None:
+                path.append(current)
+                current = parent[current]
+            return path[::-1], g
+
+        for neighbor, weight in graph[current].items():
+            new_cost = g + weight
+
+            if neighbor not in cost or new_cost < cost[neighbor]:
+                cost[neighbor] = new_cost
+                f_value = new_cost + heuristic[neighbor]
+                parent[neighbor] = current
+                heapq.heappush(open_list, (f_value, new_cost, neighbor))
+
+    return None, float('inf')
+
+path, cost = a_star('A', 'G')
+
+print("Optimal Path:", path)
+print("Minimum Cost:", cost)
+
+OUTPUT:
+Optimal Path: ['A', 'B', 'D', 'G']
+Minimum Cost: 6
